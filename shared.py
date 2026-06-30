@@ -196,6 +196,8 @@ ARCHITECTURES = {
         "pros": ["Simple to implement", "Naturally handles unpredictable tool results", "Easy to debug — one trace, one agent"],
         "cons": ["Can loop too long without good stopping logic", "No separation of planning vs. doing — harder to control long-horizon tasks"],
         "example": "A coding assistant that reads an error, runs a test, reads the new error, and keeps iterating.",
+        "use_case": "A customer-support chatbot that searches the knowledge base, reads results, and asks follow-ups until it resolves the ticket — no fixed script, every conversation is different.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_node(\"agent\", call_model)\nbuilder.add_node(\"tools\", call_tool)\nbuilder.add_conditional_edges(\"agent\", should_continue)\nbuilder.add_edge(\"tools\", \"agent\")\napp = builder.compile()",
         "tools": "LangGraph ReAct agent, OpenAI function calling loop",
     },
     "Plan-and-Execute": {
@@ -237,6 +239,8 @@ ARCHITECTURES = {
         "pros": ["Predictable, auditable execution order", "Easier to parallelize independent steps", "Plan itself is a useful artifact to show the user"],
         "cons": ["Upfront plan can be wrong and costly to revise", "Less reactive than ReAct to surprises mid-task"],
         "example": "Generating a research report: plan sections first, then fill each one in.",
+        "use_case": "A travel planner that first researches destinations, flights, and hotels, then books everything in order — the full itinerary is known upfront before any booking runs.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_node(\"planner\", plan_steps)\nbuilder.add_node(\"executor\", execute_step)\nbuilder.add_conditional_edges(\"planner\", route_next)\nbuilder.add_edge(\"executor\", \"planner\")\napp = builder.compile()",
         "tools": "LangGraph plan-and-execute template, AutoGPT-style planners",
     },
     "Reflection / Self-Refine": {
@@ -274,6 +278,8 @@ ARCHITECTURES = {
         "pros": ["Catches errors the first pass missed", "Improves quality without new tools", "Cheap to bolt onto an existing single agent"],
         "cons": ["Doubles+ token cost per task", "Can rationalize rather than truly fix issues without a strong critic prompt"],
         "example": "An agent extracting structured data, then re-checking its own JSON against the source text before returning it.",
+        "use_case": "A JSON extraction pipeline that pulls structured data from messy invoices, then re-checks its own output against the source to catch missing fields before returning.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_node(\"generate\", generator)\nbuilder.add_node(\"reflect\", critic)\nbuilder.add_conditional_edges(\"reflect\", should_continue)\napp = builder.compile()",
         "tools": "LangGraph reflection graphs, Self-Refine / Reflexion papers",
     },
     "Orchestrator-Worker": {
@@ -312,6 +318,8 @@ ARCHITECTURES = {
         "pros": ["Each worker stays simple and focused", "Easy to swap/upgrade one worker without touching others", "Scales well — this is what most production agent systems use"],
         "cons": ["Orchestrator becomes a single point of failure / bottleneck", "Coordination overhead and inter-agent message design adds complexity"],
         "example": "A knowledge-graph pipeline where an orchestrator routes raw text to an extraction agent, then a relationship-analysis agent.",
+        "use_case": "A content moderation system where one orchestrator routes an image to a toxicity checker, a copyright detector, and a spam classifier, then aggregates their verdicts.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_node(\"orchestrator\", delegate)\nbuilder.add_node(\"worker_a\", worker_a)\nbuilder.add_node(\"worker_b\", worker_b)\nbuilder.add_conditional_edges(\"orchestrator\", route_task)\napp = builder.compile()",
         "tools": "LangGraph supervisor pattern, CrewAI, AutoGen GroupChat",
     },
     "Hierarchical (Manager of Managers)": {
@@ -352,6 +360,8 @@ ARCHITECTURES = {
         "pros": ["Keeps any single prompt/context small and focused", "Mirrors how large human orgs scale", "Failures isolate to a branch instead of the whole system"],
         "cons": ["Latency stacks up across layers", "Harder to debug — errors can get lost or reinterpreted between layers", "Overkill for small tasks"],
         "example": "A large enterprise automation suite where one manager handles 'finance' tasks and another handles 'HR' tasks, each with their own sub-agents.",
+        "use_case": "An enterprise IT automation platform where a top-level manager delegates to network, database, and security team managers, each with their own specialized sub-agents.",
+        "code": "import autogen\nmanager = autogen.AssistantAgent(name=\"manager\")\nlead_a = autogen.AssistantAgent(name=\"lead_a\")\nlead_b = autogen.AssistantAgent(name=\"lead_b\")\ngroup = autogen.GroupChat(agents=[manager, lead_a, lead_b])",
         "tools": "AutoGen nested teams, custom LangGraph subgraphs",
     },
     "Network / Swarm": {
@@ -385,6 +395,8 @@ ARCHITECTURES = {
         "pros": ["Flexible, no single bottleneck", "Can model genuinely collaborative or adversarial dynamics well"],
         "cons": ["Hardest pattern to debug and predict", "Risk of infinite hand-off loops without careful guardrails", "Least mature tooling support"],
         "example": "Multi-agent negotiation or debate setups, where agents pass the conversation back and forth until consensus.",
+        "use_case": "A multi-agent debate system where a proposer, a skeptic, and a fact-checker go back and forth until the judge reaches a verdict — no single agent controls the flow.",
+        "code": "from swarm import Swarm, Agent\nclient = Swarm()\na = Agent(name=\"AgentA\", instructions=\"...\")\nb = Agent(name=\"AgentB\", instructions=\"...\")\nresponse = client.run(agent=a, messages=[{\"role\": \"user\", \"content\": \"hi\"}])",
         "tools": "AutoGen swarm mode, OpenAI Swarm",
     },
     "Sequential / Pipeline": {
@@ -423,6 +435,8 @@ ARCHITECTURES = {
         "pros": ["Extremely simple to reason about and test", "Each stage testable in isolation", "Predictable cost and latency"],
         "cons": ["No flexibility to skip or reorder steps based on content", "A bad step poisons everything downstream with no recovery path"],
         "example": "A document pipeline: OCR agent → normalization agent → entity extraction agent → summarization agent, run in a fixed order every time.",
+        "use_case": "A document processing pipeline: OCR agent -> translate agent -> summarize agent -> store agent. Every document runs through the exact same fixed steps in order.",
+        "code": "from langchain.chains import SequentialChain\nchain = SequentialChain(chains=[parse, transform, validate])\nresult = chain.run(input=input)",
         "tools": "LangChain SequentialChain, plain function composition, LangGraph linear graphs",
     },
     "Evaluator-Optimizer": {
@@ -464,6 +478,8 @@ ARCHITECTURES = {
         "pros": ["Clean separation of 'produce' vs. 'judge' keeps each prompt focused", "Objective stopping condition instead of a vague 'good enough'"],
         "cons": ["Only as good as the evaluator — a weak evaluator gives false confidence", "Can loop indefinitely without a hard iteration cap"],
         "example": "A code-generation agent writes a function, an evaluator runs the unit test suite, failures get sent back as feedback until tests pass.",
+        "use_case": "A code generator that writes a function, runs unit tests, and keeps revising until all tests pass — the test suite is the objective, automated quality gate.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_node(\"generate\", generator)\nbuilder.add_node(\"evaluate\", evaluator)\nbuilder.add_conditional_edges(\"evaluate\", should_retry)\napp = builder.compile()",
         "tools": "LangGraph evaluator-optimizer graphs, AlphaCodium-style test-driven loops",
     },
     "Router (Conditional Dispatch)": {
@@ -502,6 +518,8 @@ ARCHITECTURES = {
         "pros": ["Very low latency and cost — only one downstream agent runs", "Easy to extend by adding a new branch"],
         "cons": ["Misclassification sends the whole request to the wrong specialist with no recovery", "Doesn't handle requests that genuinely need more than one specialist"],
         "example": "A support system where the router reads a ticket and forwards it to a billing, technical, or general-inquiry agent.",
+        "use_case": "A customer support triage system that reads an incoming email and forwards it to billing, technical, or account management — exactly one handler runs per request.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_conditional_edges(\"router\", classify_intent)\napp = builder.compile()",
         "tools": "LangGraph conditional edges, OpenAI function-calling classifiers, simple intent classifiers",
     },
     "Human-in-the-Loop": {
@@ -539,6 +557,8 @@ ARCHITECTURES = {
         "pros": ["Major safety and control benefit", "Builds user trust", "Lets a human correct course before any real-world damage"],
         "cons": ["Slower — doesn't scale to high request volume", "Needs a review UI/workflow built around the checkpoint"],
         "example": "An agent drafts and queues emails, but a human must click 'approve' before anything actually sends.",
+        "use_case": "An email-sending assistant that drafts replies but never sends until a human clicks approve — every outbound message is reviewed before it goes out.",
+        "code": "from langgraph.graph import StateGraph\nbuilder = StateGraph(dict)\nbuilder.add_node(\"agent\", call_model)\nbuilder.add_node(\"human\", human_approval)\nbuilder.add_edge(\"agent\", \"human\")\napp = builder.compile(interrupt_before=[\"human\"])",
         "tools": "LangGraph interrupt/checkpoint nodes, human-approval queues in Celery/Temporal workflows",
     },
 }
@@ -597,5 +617,13 @@ def render_page(key: str) -> None:
     st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
     st.caption(data["example"])
 
+    st.subheader("🎯 Perfect use case")
+    st.success(data["use_case"])
+
+    st.subheader("💻 Code sample")
+    st.code(data["code"], language="python")
+
     st.subheader("Common tooling")
     st.code(data["tools"], language=None)
+
+
