@@ -14,10 +14,6 @@ def inject_custom_font() -> None:
     _CSS_INJECTED = True
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
-        .stApp, .stApp *:not(code):not(pre):not(.js-plotly-plot *) {
-            font-family: "Patrick Hand", cursive !important;
-        }
         .js-plotly-plot .scatterlayer text {
             stroke: #000000 !important;
             stroke-width: 1px !important;
