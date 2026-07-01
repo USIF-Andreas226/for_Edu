@@ -28,7 +28,7 @@ spectrum_edges = [(spectrum_names[i], spectrum_names[i + 1]) for i in range(len(
 
 st.plotly_chart(
     flow_diagram(spectrum_nodes, spectrum_edges, height=260),
-    use_container_width=True,
+    width="stretch",
     config={"displayModeBar": False},
 )
 
@@ -41,7 +41,7 @@ st.dataframe(
         "Core idea": [ARCHITECTURES[k]["summary"][:90] + "…" for k in ARCHITECTURES],
         "Best for": [ARCHITECTURES[k]["when"] for k in ARCHITECTURES],
     },
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 

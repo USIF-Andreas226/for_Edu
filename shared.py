@@ -3,23 +3,325 @@ import streamlit as st
 import plotly.graph_objects as go
 
 # ----------------------------------------------------------------------------
-# Custom font
+# Theme — modern dark design
 # ----------------------------------------------------------------------------
-_CSS_INJECTED = False
-
-def inject_custom_font() -> None:
-    global _CSS_INJECTED
-    if _CSS_INJECTED:
-        return
-    _CSS_INJECTED = True
+def inject_theme() -> None:
     st.markdown("""
-        <style>
-        .js-plotly-plot .scatterlayer text {
-            stroke: #000000 !important;
-            stroke-width: 1px !important;
-            paint-order: stroke fill !important;
-        }
-        </style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+  --bg-base: #0B0D17;
+  --bg-card: #131627;
+  --bg-elevated: #1A1E32;
+  --bg-hover: #22273F;
+  --border: #2A2F4A;
+  --border-light: #3A3F5A;
+  --text: #E8EAF0;
+  --text-muted: #888CAA;
+  --primary: #7C5CFC;
+  --primary-glow: rgba(124, 92, 252, 0.25);
+  --accent: #00D4AA;
+  --accent-glow: rgba(0, 212, 170, 0.2);
+  --orange: #FF8C42;
+  --pink: #FF5E9A;
+  --blue: #4A9EFF;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* ── Base ── */
+.stApp {
+  background: var(--bg-base);
+}
+.stApp > header {
+  background: transparent !important;
+}
+#MainMenu, footer {visibility: hidden;}
+.block-container {
+  padding-top: 1.5rem !important;
+  padding-bottom: 2rem !important;
+}
+
+/* ── Typography ── */
+html, body, [class*="css"], .stMarkdown, .stText, .stCaption, .stCode {
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+h1 {
+  font-size: 2.2rem !important;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem !important;
+}
+h2 { font-size: 1.4rem !important; color: var(--text) !important; }
+.stCaption {
+  color: var(--text-muted) !important;
+  font-size: 0.85rem !important;
+}
+
+/* ── Cards & Containers ── */
+div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {
+  background: transparent;
+}
+.stInfo, .stSuccess, .stError, .stWarning {
+  border: none !important;
+  border-radius: var(--radius) !important;
+  padding: 1rem 1.25rem !important;
+  font-size: 0.9rem;
+}
+.stInfo {
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.12), rgba(74, 158, 255, 0.05)) !important;
+  border-left: 3px solid var(--blue) !important;
+}
+.stSuccess {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.12), rgba(0, 212, 170, 0.05)) !important;
+  border-left: 3px solid var(--accent) !important;
+}
+.stError {
+  background: linear-gradient(135deg, rgba(255, 94, 154, 0.12), rgba(255, 94, 154, 0.05)) !important;
+  border-left: 3px solid var(--pink) !important;
+}
+.stWarning {
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.12), rgba(255, 140, 66, 0.05)) !important;
+  border-left: 3px solid var(--orange) !important;
+}
+
+/* ── Buttons ── */
+.stButton > button {
+  background: linear-gradient(135deg, var(--primary), #9B7CFF) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.5rem 1.25rem !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 15px var(--primary-glow) !important;
+}
+.stButton > button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--primary-glow) !important;
+}
+.stButton > button:active {
+  transform: translateY(0);
+}
+.stButton > button:disabled {
+  opacity: 0.4 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Sidebar ── */
+[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, rgba(19, 22, 39, 0.97), rgba(11, 13, 23, 0.99)) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-right: 1px solid var(--border) !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+[data-testid="stSidebar"] .st-emotion-cache-1wrcu25 {
+  background: transparent !important;
+}
+[data-testid="stSidebar"] .st-emotion-cache-1wrcu25 a {
+  color: var(--text) !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+[data-testid="stSidebar"] .st-emotion-cache-1wrcu25 a:hover {
+  color: var(--primary) !important;
+}
+[data-testid="stSidebar"] hr {
+  border-color: var(--border) !important;
+}
+
+/* ── Tabs ── */
+.stTabs [data-baseweb="tab-list"] {
+  gap: 0;
+  border-bottom: 1px solid var(--border) !important;
+}
+.stTabs [data-baseweb="tab"] {
+  color: var(--text-muted) !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.2s ease !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+  color: var(--text) !important;
+}
+.stTabs [aria-selected="true"] {
+  color: var(--primary) !important;
+}
+
+/* ── Select / Input ── */
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] > div {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text) !important;
+  transition: border-color 0.2s ease;
+}
+div[data-baseweb="select"] > div:hover,
+div[data-baseweb="input"] > div:hover {
+  border-color: var(--primary) !important;
+}
+div[data-baseweb="select"] > div:focus-within,
+div[data-baseweb="input"] > div:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-glow) !important;
+}
+.stSelectbox label, .stTextInput label {
+  color: var(--text-muted) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+}
+
+/* ── Slider ── */
+.stSlider [data-baseweb="slider"] {
+  margin-top: 0.5rem;
+}
+.stSlider [data-baseweb="slider"] div[role="slider"] {
+  background: var(--primary) !important;
+  border: 2px solid var(--primary) !important;
+}
+.stSlider [data-testid="stThumbValue"] {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Radio ── */
+div[role="radiogroup"] {
+  background: var(--bg-elevated) !important;
+  padding: 0.35rem !important;
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--border) !important;
+}
+div[role="radiogroup"] label {
+  color: var(--text-muted) !important;
+  font-size: 0.85rem !important;
+  transition: all 0.2s ease !important;
+}
+div[role="radiogroup"] label[data-checked="true"] {
+  color: var(--text) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Checkbox ── */
+.stCheckbox label {
+  color: var(--text-muted) !important;
+  font-size: 0.85rem !important;
+}
+
+/* ── Code blocks ── */
+.stCode {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.8rem !important;
+}
+.stCode code {
+  background: transparent !important;
+  color: var(--accent) !important;
+}
+
+/* ── DataFrames ── */
+div[data-testid="stDataFrame"] {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden;
+}
+div[data-testid="stDataFrame"] table {
+  background: var(--bg-card) !important;
+}
+div[data-testid="stDataFrame"] th {
+  background: var(--bg-elevated) !important;
+  color: var(--text-muted) !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+}
+div[data-testid="stDataFrame"] td {
+  color: var(--text) !important;
+  font-size: 0.85rem !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* ── Progress bar ── */
+.stProgress > div > div {
+  background: var(--bg-elevated) !important;
+  border-radius: 999px !important;
+  height: 8px !important;
+}
+.stProgress > div > div > div {
+  background: linear-gradient(90deg, var(--primary), var(--accent)) !important;
+  border-radius: 999px !important;
+}
+
+/* ── Divider ── */
+hr.st-emotion-cache-1aezhbc {
+  border-color: var(--border) !important;
+}
+
+/* ── Plotly charts ── */
+.js-plotly-plot .scatterlayer text {
+  stroke: #000000 !important;
+  stroke-width: 1.5px !important;
+  paint-order: stroke fill !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stApp > div {
+  animation: fadeUp 0.4s ease-out;
+}
+
+/* ── Smooth scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ── Page link (Try It Yourself card) ── */
+.stPageLink a {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.75rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+  font-weight: 600 !important;
+}
+.stPageLink a:hover {
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 20px var(--primary-glow) !important;
+  transform: translateY(-2px);
+}
+</style>
     """, unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------------
@@ -36,6 +338,10 @@ ORANGE = "#CC7A00"       # deep orange — swarm peer
 CURRENT = "#E53935"      # vivid red — highlight for "current step" in the simulator
 
 
+# ----------------------------------------------------------------------------
+# Plotly flow diagram rendering
+# ----------------------------------------------------------------------------
+
 def flow_diagram(nodes: dict, edges: list, height: int = 360) -> go.Figure:
 
     fig = go.Figure()
@@ -47,13 +353,14 @@ def flow_diagram(nodes: dict, edges: list, height: int = 360) -> go.Figure:
         dashed = edge[3] if len(edge) > 3 else False
         x0, y0 = nodes[src][0], nodes[src][1]
         x1, y1 = nodes[dst][0], nodes[dst][1]
-        annotations.append(dict(
-            ax=x0, ay=y0, x=x1, y=y1,
-            xref="x", yref="y", axref="x", ayref="y",
-            showarrow=True, arrowhead=3, arrowsize=1, arrowwidth=2,
-            arrowcolor="#7B8BA4",
-            standoff=24, startstandoff=24,
-        ))
+        if not dashed:
+            annotations.append(dict(
+                ax=x0, ay=y0, x=x1, y=y1,
+                xref="x", yref="y", axref="x", ayref="y",
+                showarrow=True, arrowhead=3, arrowsize=1, arrowwidth=2,
+                arrowcolor="#7B8BA4",
+                standoff=24, startstandoff=24,
+            ))
         if label:
             mx, my = (x0 + x1) / 2, (y0 + y1) / 2
             annotations.append(dict(
@@ -539,6 +846,7 @@ ARCHITECTURES = {
         "edges": [
             ("Agent drafts", "Checkpoint"), ("Checkpoint", "Human"),
             ("Human", "Agent continues", "approve"), ("Agent continues", "Output"),
+            ("Human", "Agent drafts", "request changes", True),
         ],
         "example_title": "Worked example: email-sending assistant",
         "example_nodes": {
@@ -566,7 +874,7 @@ ARCHITECTURES = {
 
 def init_session_state() -> None:
     """Set up the session-state slots this app relies on, once per session."""
-    inject_custom_font()
+    inject_theme()
     if "visited" not in st.session_state:
         st.session_state.visited = set()
     if "favorites" not in st.session_state:
@@ -597,7 +905,7 @@ def render_page(key: str) -> None:
 
     st.subheader("Structure")
     fig1 = flow_diagram(data["nodes"], data["edges"])
-    st.plotly_chart(fig1, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig1, width="stretch", config={"displayModeBar": False})
 
     col1, col2 = st.columns(2)
     with col1:
@@ -614,7 +922,7 @@ def render_page(key: str) -> None:
 
     st.subheader(data["example_title"])
     fig2 = flow_diagram(data["example_nodes"], data["example_edges"])
-    st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
     st.caption(data["example"])
 
     st.subheader("🎯 Perfect use case")

@@ -41,7 +41,7 @@ with tab1:
         st.caption(f"Step {step + 1} of {len(names)}: **{names[step]}**")
 
     fig = build_step_diagram(data["example_nodes"], data["example_edges"], step)
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
     if step >= len(names) - 1:
         st.success(f"Done! {data['example']}")
@@ -69,7 +69,7 @@ with tab2:
             nodes = {name: (i, 0, GREEN if i == len(stage_names) - 1 else NODE)
                      for i, name in enumerate(stage_names)}
             edges = [(stage_names[i], stage_names[i + 1]) for i in range(len(stage_names) - 1)]
-            st.plotly_chart(flow_diagram(nodes, edges), use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(flow_diagram(nodes, edges), width="stretch", config={"displayModeBar": False})
             st.caption(
                 f"This is a **Sequential / Pipeline** architecture with {len(stage_names)} fixed stages — "
                 "see that page in the sidebar for pros, cons, and when to use it."
@@ -84,7 +84,7 @@ with tab2:
         for i, w in enumerate(worker_names):
             nodes[w] = (i, 0, NODE)
         edges = [("Orchestrator", w) for w in worker_names]
-        st.plotly_chart(flow_diagram(nodes, edges), use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(flow_diagram(nodes, edges), width="stretch", config={"displayModeBar": False})
         st.caption(
             f"This is an **Orchestrator-Worker** architecture with {n_workers} workers — "
             "see that page in the sidebar for pros, cons, and when to use it."
@@ -104,7 +104,7 @@ with tab2:
                 y = (n - 1) / 2 - i
                 nodes[b] = (2, y, NODE)
                 edges.append(("Router", b))
-            st.plotly_chart(flow_diagram(nodes, edges), use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(flow_diagram(nodes, edges), width="stretch", config={"displayModeBar": False})
             st.caption(
                 f"This is a **Router (Conditional Dispatch)** architecture with {n} branches — "
                 "see that page in the sidebar for pros, cons, and when to use it."
